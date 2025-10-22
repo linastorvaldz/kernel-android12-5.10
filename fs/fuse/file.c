@@ -366,7 +366,7 @@ void fuse_release_common(struct file *file, bool isdir)
 	 * own ref to the file, the IO completion has to drop the ref, which is
 	 * how the fuse server can end up closing its clients' files.
 	 */
-	fuse_file_put(ra->inode, ff, ff->fm->fc->destroy, isdir);
+	fuse_file_put(ra->inode, ff, false, isdir);
 }
 
 static int fuse_open(struct inode *inode, struct file *file)
