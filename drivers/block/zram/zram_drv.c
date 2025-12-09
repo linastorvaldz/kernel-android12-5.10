@@ -1011,6 +1011,8 @@ static ssize_t comp_algorithm_show(struct device *dev,
 	return sz;
 }
 
+bool task_is_booster(struct task_struct *tsk);
+
 static ssize_t comp_algorithm_store(struct device *dev,
 		struct device_attribute *attr, const char *buf, size_t len)
 {
@@ -1026,6 +1028,9 @@ static ssize_t comp_algorithm_store(struct device *dev,
 
 	if (!zcomp_available_algorithm(compressor))
 		return -EINVAL;
+
+	if (task_is_booster(current))
+		return -EPERM;
 
 	down_write(&zram->init_lock);
 	if (init_done(zram)) {
