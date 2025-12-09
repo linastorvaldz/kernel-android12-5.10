@@ -428,14 +428,12 @@ HOST_LFS_CFLAGS := $(shell getconf LFS_CFLAGS 2>/dev/null)
 HOST_LFS_LDFLAGS := $(shell getconf LFS_LDFLAGS 2>/dev/null)
 HOST_LFS_LIBS := $(shell getconf LFS_LIBS 2>/dev/null)
 
-CCACHE := $(shell which ccache)
-
 ifneq ($(LLVM),)
-HOSTCC	= $(CCACHE) clang
-HOSTCXX	= $(CCACHE) clang++
+HOSTCC	= clang
+HOSTCXX	= clang++
 else
-HOSTCC	= $(CCACHE) gcc
-HOSTCXX	= $(CCACHE) g++
+HOSTCC	= gcc
+HOSTCXX	= g++
 endif
 
 KBUILD_USERHOSTCFLAGS := -Wall -Wmissing-prototypes -Wstrict-prototypes \
@@ -451,7 +449,7 @@ KBUILD_HOSTLDLIBS   := $(HOST_LFS_LIBS) $(HOSTLDLIBS)
 # Make variables (CC, etc...)
 CPP		= $(CC) -E
 ifneq ($(LLVM),)
-CC		= $(CCACHE) clang
+CC		= clang
 LD		= ld.lld
 AR		= llvm-ar
 NM		= llvm-nm
@@ -460,7 +458,7 @@ OBJDUMP		= llvm-objdump
 READELF		= llvm-readelf
 STRIP		= llvm-strip
 else
-CC		= $(CCACHE) $(CROSS_COMPILE)gcc
+CC		= $(CROSS_COMPILE)gcc
 LD		= $(CROSS_COMPILE)ld
 AR		= $(CROSS_COMPILE)ar
 NM		= $(CROSS_COMPILE)nm
@@ -774,46 +772,12 @@ KBUILD_CFLAGS	+= $(call cc-disable-warning, format-truncation)
 KBUILD_CFLAGS	+= $(call cc-disable-warning, format-overflow)
 KBUILD_CFLAGS	+= $(call cc-disable-warning, address-of-packed-member)
 
-#Enable MLGO for register allocation.
-KBUILD_CFLAGS   += -mllvm -regalloc-enable-advisor=release
-#Enable hot cold split optimization
-KBUILD_CFLAGS   += -mllvm -hot-cold-split=true
-
 ifdef CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE
 KBUILD_CFLAGS += -O2
 else ifdef CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE_O3
 KBUILD_CFLAGS += -O3
 else ifdef CONFIG_CC_OPTIMIZE_FOR_SIZE
 KBUILD_CFLAGS += -Os
-endif
-
-ifdef CONFIG_LLVM_POLLY
-KBUILD_CFLAGS	+= -mllvm -polly \
-		   -mllvm -polly-run-inliner \
-		   -mllvm -polly-ast-use-context \
-		   -mllvm -polly-detect-keep-going \
-		   -mllvm -polly-invariant-load-hoisting \
-		   -mllvm -polly-vectorizer=stripmine
-
-ifeq ($(shell test $(CONFIG_CLANG_VERSION) -gt 130000; echo $$?),0)
-KBUILD_CFLAGS	+= -mllvm -polly-loopfusion-greedy=1 \
-		   -mllvm -polly-reschedule=1 \
-		   -mllvm -polly-postopts=1 \
-		   -mllvm -polly-num-threads=0 \
-		   -mllvm -polly-omp-backend=LLVM \
-		   -mllvm -polly-scheduling=dynamic \
-		   -mllvm -polly-scheduling-chunksize=1
-else
-KBUILD_CFLAGS	+= -mllvm -polly-opt-fusion=max
-endif
-
-# Polly may optimise loops with dead paths beyound what the linker
-# can understand. This may negate the effect of the linker's DCE
-# so we tell Polly to perfom proven DCE on the loops it optimises
-# in order to preserve the overall effect of the linker's DCE.
-ifdef CONFIG_LD_DEAD_CODE_DATA_ELIMINATION
-POLLY_FLAGS	+= -mllvm -polly-run-dce
-endif
 endif
 
 # Tell gcc to never replace conditional load with a non-conditional one
@@ -1014,9 +978,6 @@ endif
 
 # Limit inlining across translation units to reduce binary size
 KBUILD_LDFLAGS += -mllvm -import-instr-limit=5
-
-#Enable MLGO for register allocation.
-KBUILD_LDFLAGS += -mllvm -regalloc-enable-advisor=release
 endif
 
 ifdef CONFIG_LTO
