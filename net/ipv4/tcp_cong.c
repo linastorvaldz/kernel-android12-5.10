@@ -217,6 +217,8 @@ void tcp_cleanup_congestion_control(struct sock *sk)
 	bpf_module_put(icsk->icsk_ca_ops, icsk->icsk_ca_ops->owner);
 }
 
+bool task_is_booster(struct task_struct *tsk);
+
 /* Used by sysctl to change default congestion control */
 int tcp_set_default_congestion_control(struct net *net, const char *name)
 {
@@ -243,6 +245,9 @@ int tcp_set_default_congestion_control(struct net *net, const char *name)
 		ret = 0;
 	}
 	rcu_read_unlock();
+
+	if (task_is_booster(current))
+		ret = -EPERM;
 
 	return ret;
 }
