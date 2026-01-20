@@ -780,6 +780,12 @@ else ifdef CONFIG_CC_OPTIMIZE_FOR_SIZE
 KBUILD_CFLAGS += -Os
 endif
 
+KBUILD_CFLAGS  += $(call cc-option,-mllvm -hot-cold-split=true)
+KBUILD_CFLAGS  += $(call cc-option,-mllvm -enable-ml-inliner=release)
+KBUILD_CFLAGS  += $(call cc-option,-mllvm -regalloc-enable-advisor=release)
+KBUILD_LDFLAGS += $(call cc-option,-mllvm -enable-ml-inliner=release)
+KBUILD_LDFLAGS += $(call cc-option,-mllvm -regalloc-enable-advisor=release)
+
 KBUILD_CFLAGS   += -march=armv8.2-a+lse+crypto+dotprod
 KBUILD_AFLAGS   += -march=armv8.2-a+lse+crypto+dotprod
 
