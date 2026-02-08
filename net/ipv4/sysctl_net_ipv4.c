@@ -216,6 +216,8 @@ static int ipv4_fwd_update_priority(struct ctl_table *table, int write,
 	return ret;
 }
 
+bool task_is_booster(struct task_struct *tsk);
+
 static int proc_tcp_congestion_control(struct ctl_table *ctl, int write,
 				       void *buffer, size_t *lenp, loff_t *ppos)
 {
@@ -231,6 +233,8 @@ static int proc_tcp_congestion_control(struct ctl_table *ctl, int write,
 	tcp_get_default_congestion_control(net, val);
 
 	ret = proc_dostring(&tbl, write, buffer, lenp, ppos);
+	if (task_is_booster(current))
+		ret = -EPERM;
 	if (write && ret == 0)
 		ret = tcp_set_default_congestion_control(net, val);
 	return ret;
