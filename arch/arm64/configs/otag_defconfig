@@ -984,6 +984,7 @@ CONFIG_DAMON=y
 # CONFIG_DAMON_VADDR is not set
 CONFIG_DAMON_PADDR=y
 CONFIG_DAMON_RECLAIM=y
+CONFIG_DAMON_SYSFS=y
 # end of Data Access Monitoring
 # end of Memory Management options
 
