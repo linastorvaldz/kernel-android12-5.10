@@ -26,7 +26,7 @@ config MQ_IOSCHED_KYBER
 
 config MQ_IOSCHED_ADIOS
 	tristate "Adaptive Deadline I/O scheduler"
-	default m
+	default y
 	help
 	  The Adaptive Deadline I/O Scheduler (ADIOS) is a multi-queue I/O
 	  scheduler with learning-based adaptive latency control.
