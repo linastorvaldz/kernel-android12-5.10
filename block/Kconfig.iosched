@@ -57,6 +57,7 @@ config BFQ_CGROUP_DEBUG
 	Enable some debugging help. Currently it exports additional stat
 	files in a cgroup which can be useful for debugging.
 
+<<<<<<< HEAD
 
 config MQ_IOSCHED_SSG
 	tristate "SamSung Generic I/O scheduler"
@@ -105,6 +106,8 @@ endchoice
 
 
 
+=======
+>>>>>>> parent of 391f99d3367a (block: iosched: add ssg from Samsung SM-S908B_12_Opensource)
 endmenu
 
 endif
