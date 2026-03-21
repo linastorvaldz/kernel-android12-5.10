@@ -94,6 +94,10 @@ choice
 		bool "SamSung Generic I/O scheduler"
 		depends on MQ_IOSCHED_SSG
 
+	config ADIOS_DEFAULT
+		bool "ADIOS"
+		depends on MQ_IOSCHED_ADIOS
+
 	config NONE_DEFAULT
 		bool "NONE"
 
