@@ -57,22 +57,6 @@ config BFQ_CGROUP_DEBUG
 	Enable some debugging help. Currently it exports additional stat
 	files in a cgroup which can be useful for debugging.
 
-<<<<<<< HEAD
-
-config MQ_IOSCHED_SSG
-	tristate "SamSung Generic I/O scheduler"
-	default n
-	help
-	  SamSung Generic IO scheduler.
-
-config MQ_IOSCHED_SSG_CGROUP
-	tristate "Control Group for SamSung Generic I/O scheduler"
-	default n
-	depends on BLK_CGROUP
-	depends on MQ_IOSCHED_SSG
-	help
-	  Control Group for SamSung Generic IO scheduler.
-
 choice
 	prompt "Default mq I/O scheduler"
 	default MQ_DEADLINE_DEFAULT
@@ -91,10 +75,6 @@ choice
 		bool "BFQ"
 		depends on IOSCHED_BFQ
 
-	config MQ_SSG_DEFAULT
-		bool "SamSung Generic I/O scheduler"
-		depends on MQ_IOSCHED_SSG
-
 	config ADIOS_DEFAULT
 		bool "ADIOS"
 		depends on MQ_IOSCHED_ADIOS
@@ -104,10 +84,6 @@ choice
 
 endchoice
 
-
-
-=======
->>>>>>> parent of 391f99d3367a (block: iosched: add ssg from Samsung SM-S908B_12_Opensource)
 endmenu
 
 endif
