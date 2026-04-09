@@ -886,6 +886,14 @@ static void damos_update_stat(struct damos *s,
 	if (sz_applied)
 		s->stat.nr_applied++;
 	s->stat.sz_applied += sz_applied;
+	if (s->action == DAMOS_PAGEOUT && sz_applied) {
+		if (sz_applied < 1024)
+			pr_info("%u bytes of memory reclaimed\n", sz_applied);
+		else if (sz_applied < 1024 * 1024)
+			pr_info("%u KB of memory reclaimed\n", sz_applied >> 10);
+		else
+			pr_info("%u MB of memory reclaimed\n", sz_applied >> 20);
+	}
 }
 
 static bool __damos_filter_out(struct damon_ctx *ctx, struct damon_target *t,
@@ -1352,10 +1360,12 @@ static unsigned long damos_wmark_wait_us(struct damos *scheme)
 	/* higher than high watermark or lower than low watermark */
 	if (metric > scheme->wmarks.high || scheme->wmarks.low > metric) {
 		if (scheme->wmarks.activated)
-			pr_debug("deactivate a scheme (%d) for %s wmark\n",
+			pr_info("deactivate a scheme (%d) for %s wmark, "
+				"mem free rate: %ld%%\n",
 					scheme->action,
 					metric > scheme->wmarks.high ?
-					"high" : "low");
+					"high" : "low",
+					metric / 10);
 		scheme->wmarks.activated = false;
 		return scheme->wmarks.interval;
 	}
@@ -1366,7 +1376,8 @@ static unsigned long damos_wmark_wait_us(struct damos *scheme)
 		return scheme->wmarks.interval;
 
 	if (!scheme->wmarks.activated)
-		pr_debug("activate a scheme (%d)\n", scheme->action);
+		pr_info("activate a scheme (%d), mem free rate: %ld%%\n",
+			scheme->action, metric / 10);
 	scheme->wmarks.activated = true;
 	return 0;
 }
